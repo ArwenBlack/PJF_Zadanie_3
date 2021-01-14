@@ -5,6 +5,7 @@ class LZ_78:
         self.dict_limit = dict_limit   #rozmiar słownika
 
     def compress(self, byte_array):
+        #print(byte_array)
         input_chars = tuple(byte_array)
         #print(input_chars)
         output_chars = (input_chars[0], )
@@ -36,6 +37,7 @@ class LZ_78:
         if input_chars[i: i_chars] in dict and i != i_chars:
             prepend = tuple(dict[input_chars[i:i_chars]])
             output_chars += prepend + tuple([0 for i in range(len(dict_size) - len(prepend))])
+        print(output_chars)
         return bytes(output_chars)
 
 
