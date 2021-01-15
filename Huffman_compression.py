@@ -35,7 +35,7 @@ def walk_tree(node, prefix='', codes={}):
         walk_tree(node[1].right, prefix + '1', codes)
     else:
         codes[node[1].right[1]] = prefix + '1'
-    # print (codes)
+    #print (codes)
     return codes
 
 
@@ -76,6 +76,8 @@ def save_compressed_file(file_name, codes_array, byte_array):  #codes_array - in
     file = open(file_name, 'wb')
     pickle.dump(codes_array, file)
     pickle.dump(byte_array, file)
+    print ('****')
+    print (codes_array)
     file.close()
 
 def main():
