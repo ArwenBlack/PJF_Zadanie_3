@@ -14,7 +14,6 @@ def count_character(text):
     freq = []
     for char, count in temp_freq.items():
         freq.append((count,char))
-    print(freq)
     return freq
 
 def count_character_freq(text):
@@ -28,5 +27,4 @@ def count_character_freq(text):
     freq = []
     for char, count in temp_freq.items():
         freq.append((count/lenght,char))
-    print(freq)
     return freq

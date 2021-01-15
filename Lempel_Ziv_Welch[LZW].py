@@ -3,10 +3,11 @@ from struct import pack, unpack
 
 
 class LZW:
-    def __init__(self):
+    def __init__(self, file =None):
         self.dict_size = 256
+        self.file_name = file
 
-    def compress(self, input_file):
+    def compress_data(self, input_file):
         dict_size = 1112064  #ZNAKI UTF-8 - może da się jakoś zmiejszyć
         dictionary = {chr(i): i for i in range(dict_size)}
         string = ''
@@ -35,7 +36,7 @@ class LZW:
             compressed_data.append(data)
         return compressed_data
 
-    def decompress(self, compressed_data):
+    def decompress_data(self, compressed_data):
         dict_size = 1112064
         dictionary = dict((i, chr(i)) for i in range(dict_size))
         decompressed_data = StringIO()
@@ -55,23 +56,28 @@ class LZW:
         #print(decompressed_data.getvalue())
         return decompressed_data.getvalue()
 
+    def compress(self):
+        file = open(self.file_name, 'r', encoding='utf-8')
+        data = file.read()
+        file.close()
+        compressed = self.compress_data(data)
+        file = open('arcio_lzw_com.txt', 'wb')
+        for data in compressed:
+            file.write(pack('!i', int(data)))
+        file.close()
+
+    def decompress(self):
+        file = open('arcio_lzw_com.txt', 'rb')
+        compressed = self.read_compressed_file(file)
+        decompressed = self.decompress_data(compressed)
+        file = open('arcio_lzw_decom.txt', 'w', encoding='utf-8')
+        file.write(decompressed)
+        file.close()
 
 def main():
-    file = open('arcio.txt', 'r', encoding='utf-8')
-    data = file.read()
-    file.close()
-    lzw = LZW()
-    compressed = lzw.compress(data)
-    file = open('arcio_lzw_com.txt', 'wb')
-    for data in compressed:
-        file.write(pack('!i', int(data)))
-    file.close()
-    file = open('arcio_lzw_com.txt', 'rb')
-    compressed = lzw.read_compressed_file(file)
-    decompressed = lzw.decompress(compressed)
-    file = open('arcio_lzw_decom.txt', 'w', encoding='utf-8')
-    file.write(decompressed)
-    file.close()
+    lzw = LZW('arcio.txt')
+    lzw.compress()
+    lzw.decompress()
 
 
 main()
