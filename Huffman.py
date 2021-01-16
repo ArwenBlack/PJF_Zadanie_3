@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import copy
 import pickle
+from os.path import splitext
+
 import Read_file
 
 
@@ -79,12 +81,21 @@ class HuffNode:
         encoded_text = encode_text(codes, text)
         encoded_filled = prepare_to_byte_save(encoded_text)
         byte_table = save_as_bytearray(encoded_filled)
-        save_compressed_file('arcio_com.txt', codes_table, byte_table)
+        save_compressed_file(splitext(file_name)[0] + '.huff_com', codes_table, byte_table)
 
+    def compress_from_text(self, text, file_name):
+        freq = Read_file.count_character(text)
+        node = create_tree(freq)
+        codes = self.walk_tree(node)
+        codes_table = invert_codes(codes)
+        encoded_text = encode_text(codes, text)
+        encoded_filled = prepare_to_byte_save(encoded_text)
+        byte_table = save_as_bytearray(encoded_filled)
+        save_compressed_file(splitext(file_name)[0] + '.huff_tr_com', codes_table, byte_table)
 
-def main():
-    h = HuffNode()
-    h.compress('arcio.txt')
-
-
-main()
+# def main():
+#     h = HuffNode()
+#     h.compress('arcio.txt')
+#
+#
+# main()
