@@ -1,6 +1,6 @@
 import math
 import pickle
-
+from os.path import splitext
 
 import Read_file
 from All_statistic_coding_decompression import *
@@ -87,11 +87,6 @@ class Shannon:
         invert_codes_dict = self.invert_codes(codes_dict)
         prepered_encoded_text = self.prepare_to_byte_save(encoded)
         bytearray = self.save_as_bytearray(prepered_encoded_text)
-        self.save_compressed_file('arcio_s_com.txt', invert_codes_dict, bytearray)
+        self.save_compressed_file(splitext(self.file)[0] + '.shann_com', invert_codes_dict, bytearray)
 
 
-def main():
-    s = Shannon('arcio.txt')
-    s.compress()
-
-main()

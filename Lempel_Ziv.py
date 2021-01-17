@@ -1,12 +1,17 @@
 import sys
+from os.path import splitext
+
 
 class LZ_78:
     def __init__(self, dict_limit = None):
         self.dict_limit = dict_limit   #rozmiar słownika
 
-    def compress(self, byte_array):
+    def compress(self, file_name):
         #print(byte_array)
-        input_chars = tuple(byte_array)
+        file = open(file_name, 'rb')
+        text = file.read()
+        file.close()
+        input_chars = tuple(text)
         #print(input_chars)
         output_chars = (input_chars[0], )
         dict = {tuple(): (0, ), (input_chars[0], ): (1, )}
@@ -37,12 +42,16 @@ class LZ_78:
         if input_chars[i: i_chars] in dict and i != i_chars:
             prepend = tuple(dict[input_chars[i:i_chars]])
             output_chars += prepend + tuple([0 for i in range(len(dict_size) - len(prepend))])
-        print(output_chars)
-        return bytes(output_chars)
+        file = open(splitext(file_name)[0] + '.lz78_com', 'wb')
+        file.write(bytes(output_chars))
+        file.close()
 
 
-    def decompress(self, byte_array):
-        input_char = tuple(byte_array)
+    def decompress(self, file_name):
+        file = open(file_name, 'rb')
+        text = file.read()
+        file.close()
+        input_char = tuple(text)
         output_char = (input_char[0], )
         dict = [tuple(), (input_char[0], )]
         i_char = 1
@@ -71,24 +80,13 @@ class LZ_78:
                 output_char += dict[i]
                 i_char += byte_number
                 is_char = True
-        return bytes(output_char)
+        file = open(splitext(file_name)[0] + '.lz78_dcom', 'wb')
+        file.write(bytes(output_char))
+        file.close()
 
 
-def main():
-    lz = LZ_78(256)
-    file = open('arcio.txt', 'rb')
-    text = file.read()
-    file.close()
-    compressed_text = lz.compress(text)
-    file = open('arcio_lz_com.txt', 'wb')
-    file.write(compressed_text)
-    file.close()
-    file = open('arcio_lz_com.txt', 'rb')
-    text_com = file.read()
-    file.close()
-    decompressed_text = lz.decompress(text_com)
-    file = open('arcio_lz_decom.txt', 'wb')
-    file.write(decompressed_text)
-    file.close()
-
-main()
+# def main():
+#     lz = LZ_78(256)
+#     lz.compress('pt.txt')
+#
+# main()

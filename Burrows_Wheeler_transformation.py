@@ -1,3 +1,5 @@
+
+
 def burrows_wheeler_transformation(text):
     length = len(text)
     rotation_table = sorted([text[i:length] + text[0:i] for i in range(length)])

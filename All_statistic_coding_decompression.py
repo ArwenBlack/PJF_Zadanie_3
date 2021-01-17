@@ -1,4 +1,6 @@
 import pickle
+from os.path import splitext
+
 
 class Statistic_coding_decompression:
 
@@ -41,13 +43,11 @@ class Statistic_coding_decompression:
         file.write(decompressed_text)
         file.close()
 
-    def decompression(self, file_name):
+    def decompression(self, file_name, alg):
         codes_table, bytes_table = self.read_compressed_file(file_name)
         bits_chain = self.get_bits_chain(bytes_table)
         decoded_text = self.decompress_text(codes_table, bits_chain)
-        self.save_decomppresed_file('arcio_decom.txt', decoded_text)
-
-def main():
-    d = Statistic_coding_decompression()
-    d.decompression('arcio_com.txt')
-main()
+        if alg =='huff':
+            self.save_decomppresed_file(splitext(file_name)[0] + '.huff_dcom', decoded_text)
+        elif alg == 'shan':
+            self.save_decomppresed_file(splitext(file_name)[0] + '.shan_dcom', decoded_text)

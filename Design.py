@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'kompress_first_window.ui'
+# Form implementation generated from reading ui file 'd.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.2
 #
@@ -9,7 +9,6 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 
 class Ui_MainWindow(object):
@@ -56,7 +55,7 @@ class Ui_MainWindow(object):
         self.decom.setObjectName("decom")
         self.horizontalLayout_2.addWidget(self.decom)
         self.verticalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(210, 430, 160, 109))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(220, 460, 160, 109))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -68,6 +67,17 @@ class Ui_MainWindow(object):
         self.saved_file_name = QtWidgets.QTextBrowser(self.verticalLayoutWidget)
         self.saved_file_name.setObjectName("saved_file_name")
         self.verticalLayout.addWidget(self.saved_file_name)
+        self.verticalLayoutWidget_2 = QtWidgets.QWidget(self.centralwidget)
+        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(140, 410, 311, 41))
+        self.verticalLayoutWidget_2.setObjectName("verticalLayoutWidget_2")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_2)
+        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.info = QtWidgets.QLabel(self.verticalLayoutWidget_2)
+        self.info.setText("")
+        self.info.setAlignment(QtCore.Qt.AlignCenter)
+        self.info.setObjectName("info")
+        self.verticalLayout_2.addWidget(self.info)
         self.widget = QtWidgets.QWidget(self.centralwidget)
         self.widget.setGeometry(QtCore.QRect(20, 10, 541, 111))
         self.widget.setObjectName("widget")

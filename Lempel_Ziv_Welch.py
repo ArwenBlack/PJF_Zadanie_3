@@ -1,4 +1,5 @@
 from io import StringIO
+from os.path import splitext
 from struct import pack, unpack
 
 
@@ -61,23 +62,23 @@ class LZW:
         data = file.read()
         file.close()
         compressed = self.compress_data(data)
-        file = open('arcio_lzw_com.txt', 'wb')
+        file = open(splitext(self.file_name)[0] + '.lzw_com', 'wb')
         for data in compressed:
             file.write(pack('!i', int(data)))
         file.close()
 
-    def decompress(self):
-        file = open('arcio_lzw_com.txt', 'rb')
+    def decompress(self, file_name):
+        file = open(file_name, 'rb')
         compressed = self.read_compressed_file(file)
         decompressed = self.decompress_data(compressed)
-        file = open('arcio_lzw_decom.txt', 'w', encoding='utf-8')
+        file = open(splitext(file_name)[0] + '.lzw_dcom', 'w', encoding='utf-8')
         file.write(decompressed)
         file.close()
 
-def main():
-    lzw = LZW('arcio.txt')
-    lzw.compress()
-    lzw.decompress()
-
-
-main()
+# def main():
+#     lzw = LZW('arcio.txt')
+#     lzw.compress()
+#     lzw.decompress()
+#
+#
+# main()
