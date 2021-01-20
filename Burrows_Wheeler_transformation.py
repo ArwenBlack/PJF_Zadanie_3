@@ -1,34 +1,30 @@
+from functools import cmp_to_key
 
+def suffix_array(text):
+    return sorted(range(len(text)), key=cmp_to_key(lambda i, j: 1 if text[i:] >= text[j:] else -1))
 
-def burrows_wheeler_transformation(text):
-    length = len(text)
-    rotation_table = sorted([text[i:length] + text[0:i] for i in range(length)])
-    #print(rotation_table)
-    index = rotation_table.index(text)
-    text_block = ''.join([q[-1] for q in rotation_table])
-    new_text = str(index) + text_block
-    return new_text
+def burrows_wheeler_transformation(text , suffix_arr):
+    return''.join(text[i-1] for i in suffix_arr)
 
+def burrows_wheeler_restore(bwt):
+    table = [''for c in bwt]
+    for i in range (len(bwt)):
+        table = sorted([c + table[i] for i, c in enumerate(bwt)])
+    return table[bwt.index('$')]
 
-def burrows_wheeler_restore(text):
-    index = int(text[0])
-    trans_text = text[1:]
-    length = len(trans_text)
-    index_table = sorted([(i, x) for i, x in enumerate(trans_text)], key=lambda tup: tup[1])
-    #print(index_table)
-    table = [None] * length
-    for i, y in enumerate(index_table):
-        j = y[0]
-        table[j] = i
+def main():
+    file = open("pt.txt", 'r', encoding='utf-8')
+    text = file.read()
+    file.close()
+    text = text +'$'
+    s = suffix_array(text)
+    text_n = burrows_wheeler_transformation(text, s)
+    file = open("pt_t.txt", 'w', encoding='utf-8')
+    file.write(text_n)
+    file.close()
+    text_r = burrows_wheeler_restore(text_n)
+    file = open("pt_to.txt", 'w', encoding='utf-8')
+    file.write(text_r)
+    file.close()
 
-    #print(table)
-    vector_i = [index]
-    for i in range(1, length):
-        vector_i.append(table[vector_i[i - 1]])
-    #print(vector_i)
-    restored_text_table = [trans_text[i] for i in vector_i]
-    restored_text_table.reverse()
-    restored_text_s = ''.join([str(elem) for elem in restored_text_table])
-    return restored_text_s
-
-
+main()
