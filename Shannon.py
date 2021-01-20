@@ -89,4 +89,12 @@ class Shannon:
         bytearray = self.save_as_bytearray(prepered_encoded_text)
         self.save_compressed_file(splitext(self.file)[0] + '.shann_com', invert_codes_dict, bytearray)
 
-
+    def compress_text(self, text):
+        freq_table = Read_file.count_character_freq(text)
+        precision_dict = self.get_precision(freq_table)
+        codes_dict = self.get_code(precision_dict)
+        encoded = self.get_encoded_text(codes_dict, text)
+        invert_codes_dict = self.invert_codes(codes_dict)
+        prepered_encoded_text = self.prepare_to_byte_save(encoded)
+        bytearray = self.save_as_bytearray(prepered_encoded_text)
+        self.save_compressed_file(splitext(self.file)[0] + '.shann_tr_com', invert_codes_dict, bytearray)

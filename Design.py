@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'd.ui'
+# Form implementation generated from reading ui file 'view.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.2
 #
@@ -78,14 +78,14 @@ class Ui_MainWindow(object):
         self.info.setAlignment(QtCore.Qt.AlignCenter)
         self.info.setObjectName("info")
         self.verticalLayout_2.addWidget(self.info)
-        self.widget = QtWidgets.QWidget(self.centralwidget)
-        self.widget.setGeometry(QtCore.QRect(20, 10, 541, 111))
-        self.widget.setObjectName("widget")
-        self.horizontalLayout = QtWidgets.QHBoxLayout(self.widget)
+        self.layoutWidget = QtWidgets.QWidget(self.centralwidget)
+        self.layoutWidget.setGeometry(QtCore.QRect(20, 10, 541, 111))
+        self.layoutWidget.setObjectName("layoutWidget")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.layoutWidget)
         self.horizontalLayout.setContentsMargins(30, 15, 22, 15)
         self.horizontalLayout.setSpacing(40)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.groupBox = QtWidgets.QGroupBox(self.widget)
+        self.groupBox = QtWidgets.QGroupBox(self.layoutWidget)
         self.groupBox.setEnabled(True)
         self.groupBox.setAutoFillBackground(True)
         self.groupBox.setTitle("")
@@ -103,6 +103,9 @@ class Ui_MainWindow(object):
         self.file_name.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustIgnored)
         self.file_name.setObjectName("file_name")
         self.horizontalLayout.addWidget(self.groupBox)
+        self.data_analyze = QtWidgets.QPushButton(self.centralwidget)
+        self.data_analyze.setGeometry(QtCore.QRect(260, 590, 75, 23))
+        self.data_analyze.setObjectName("data_analyze")
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -129,3 +132,4 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "Saved file:"))
         self.get_file.setText(_translate("MainWindow", "Get file"))
         self.file_name.setPlaceholderText(_translate("MainWindow", "file name"))
+        self.data_analyze.setText(_translate("MainWindow", "data analyze"))

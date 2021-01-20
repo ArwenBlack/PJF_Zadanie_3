@@ -1,6 +1,8 @@
 import pickle
 from os.path import splitext
 
+from Burrows_Wheeler_transformation import burrows_wheeler_restore
+
 
 class Statistic_coding_decompression:
 
@@ -51,3 +53,13 @@ class Statistic_coding_decompression:
             self.save_decomppresed_file(splitext(file_name)[0] + '.huff_dcom', decoded_text)
         elif alg == 'shan':
             self.save_decomppresed_file(splitext(file_name)[0] + '.shan_dcom', decoded_text)
+
+    def decompression_tr(self, file_name, alg):
+        codes_table, bytes_table = self.read_compressed_file(file_name)
+        bits_chain = self.get_bits_chain(bytes_table)
+        decoded_text = self.decompress_text(codes_table, bits_chain)
+        decoded_text1 = burrows_wheeler_restore(decoded_text)
+        if alg =='huff':
+            self.save_decomppresed_file(splitext(file_name)[0] + '.huff_tr_dcom', decoded_text1)
+        elif alg == 'shan':
+            self.save_decomppresed_file(splitext(file_name)[0] + '.shan_tr_dcom', decoded_text1)

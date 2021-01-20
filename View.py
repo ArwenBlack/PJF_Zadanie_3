@@ -4,13 +4,15 @@ from PyQt5.QtWidgets import *
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QRunnable, QThreadPool, pyqtSlot
 import Design
+import View_data
 from All_statistic_coding_decompression import Statistic_coding_decompression
-from Burrows_Wheeler_transformation import burrows_wheeler_transformation
+from Burrows_Wheeler_transformation import burrows_wheeler_transformation, burrows_wheeler_restore
 from Huffman import HuffNode
 from Lempel_Ziv_Welch import LZW
 from Read_file import read_txt_file
 from Shannon import Shannon
 from Lempel_Ziv import LZ_78
+
 
 
 class Runnable(QRunnable):
@@ -25,7 +27,7 @@ class Runnable(QRunnable):
         self.fn(*self.args, **self.kwargs)
 
 
-class ExampleApp(QtWidgets.QMainWindow, Design.Ui_MainWindow):
+class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
     file: str
     choosed: int
 
@@ -41,8 +43,13 @@ class ExampleApp(QtWidgets.QMainWindow, Design.Ui_MainWindow):
         self.shan_tr.toggled.connect(self.com_type)
         self.lz78.toggled.connect(self.com_type)
         self.lzw.toggled.connect(self.com_type)
+        self.data_analyze.clicked.connect(self.data)
 
         self.threadpool = QThreadPool()
+
+    def data(self):
+        self.w = View_data.Main_window()
+        self.w.show()
 
     def get_file_f(self):
         options = QFileDialog.Options()
@@ -76,10 +83,24 @@ class ExampleApp(QtWidgets.QMainWindow, Design.Ui_MainWindow):
         h.compress(self.file)
         self.info.setText('Compression done')
 
+    def huff_t_com(self):
+        self.info.setText('Compressing...')
+        text = read_txt_file(self.file)
+        text1 = burrows_wheeler_transformation(text)
+        h = HuffNode()
+        h.compress_from_text(text1, self.file)
+        self.info.setText('Compression done')
+
     def huff_dcom(self):
         self.info.setText('Decompressing...')
         h = Statistic_coding_decompression()
         h.decompression(self.file, 'huff')
+        self.info.setText('Dempression done')
+
+    def huff_t_dcom(self):
+        self.info.setText('Decompressing...')
+        h = Statistic_coding_decompression()
+        h.decompression_tr(self.file, 'huff')
         self.info.setText('Dempression done')
 
     def shan_com(self):
@@ -88,10 +109,24 @@ class ExampleApp(QtWidgets.QMainWindow, Design.Ui_MainWindow):
         s.compress()
         self.info.setText('Compression done')
 
+    def shan_t_com(self):
+        self.info.setText('Compressing...')
+        text = read_txt_file(self.file)
+        text1 = burrows_wheeler_transformation(text)
+        s = Shannon(self.file)
+        s.compress_text(text1)
+        self.info.setText('Compression done')
+
     def shan_dcom(self):
         self.info.setText('Decompressing...')
         s = Statistic_coding_decompression()
         s.decompression(self.file, 'shan')
+        self.info.setText('Dempression done')
+
+    def shan_t_dcom(self):
+        self.info.setText('Decompressing...')
+        s = Statistic_coding_decompression()
+        s.decompression_tr(self.file, 'shan')
         self.info.setText('Dempression done')
 
     def lz78_com(self):
@@ -124,14 +159,17 @@ class ExampleApp(QtWidgets.QMainWindow, Design.Ui_MainWindow):
             self.threadpool.start(runnable)
 
         elif self.choosed == 2:
-            text = read_txt_file(self.file)
-            text1 = burrows_wheeler_transformation(text)
-            h = HuffNode()
-            h.compress_from_text(text1, self.file)
+            runnable = Runnable(self.huff_t_com)
+            self.threadpool.start(runnable)
 
         elif self.choosed == 3:
             runnable = Runnable(self.shan_com)
             self.threadpool.start(runnable)
+
+        elif self.choosed == 4:
+            runnable = Runnable(self.shan_t_com)
+            self.threadpool.start(runnable)
+
 
         elif self.choosed == 5:
             runnable = Runnable(self.lz78_com)
@@ -146,14 +184,16 @@ class ExampleApp(QtWidgets.QMainWindow, Design.Ui_MainWindow):
             runnable = Runnable(self.huff_dcom)
             self.threadpool.start(runnable)
 
-        # elif self.choosed == 2:
-        #     text = read_txt_file(self.file)
-        #     text1 = burrows_wheeler_transformation(text)
-        #     h = HuffNode()
-        #     h.compress_from_text(text1, self.file)
-        #
+        elif self.choosed == 2:
+            runnable = Runnable(self.huff_t_dcom)
+            self.threadpool.start(runnable)
+
         elif self.choosed == 3:
             runnable = Runnable(self.shan_dcom)
+            self.threadpool.start(runnable)
+
+        elif self.choosed == 4:
+            runnable = Runnable(self.shan_t_dcom)
             self.threadpool.start(runnable)
 
         elif self.choosed == 5:
@@ -167,7 +207,7 @@ class ExampleApp(QtWidgets.QMainWindow, Design.Ui_MainWindow):
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    window = ExampleApp()
+    window = Main_window()
     window.show()
     app.exec_()
 
