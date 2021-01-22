@@ -5,7 +5,6 @@ from struct import pack, unpack
 
 class LZW:
     def __init__(self, file =None):
-        self.dict_size = 256
         self.file_name = file
 
     def compress_data(self, input_file):
@@ -66,6 +65,7 @@ class LZW:
         for data in compressed:
             file.write(pack('!i', int(data)))
         file.close()
+        return splitext(self.file_name)[0] + '.lzw_com'
 
     def decompress(self, file_name):
         file = open(file_name, 'rb')
@@ -74,11 +74,12 @@ class LZW:
         file = open(splitext(file_name)[0] + '.lzw_dcom', 'w', encoding='utf-8')
         file.write(decompressed)
         file.close()
+        return splitext(file_name)[0] + '.lzw_dcom'
 
 # def main():
-#     lzw = LZW('arcio.txt')
+#     lzw = LZW('pt.txt')
 #     lzw.compress()
-#     lzw.decompress()
+#
 #
 #
 # main()

@@ -38,9 +38,7 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
         self.com.clicked.connect(self.compress)
         self.decom.clicked.connect(self.decompress)
         self.huff.toggled.connect(self.com_type)
-        self.huff_tr.toggled.connect(self.com_type)
         self.shan.toggled.connect(self.com_type)
-        self.shan_tr.toggled.connect(self.com_type)
         self.lz78.toggled.connect(self.com_type)
         self.lzw.toggled.connect(self.com_type)
         self.data_analyze.clicked.connect(self.data)
@@ -64,16 +62,12 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
         if type.isChecked():
             if type.objectName() == 'huff':
                 self.choosed = 1
-            elif type.objectName() == 'huff_tr':
-                self.choosed = 2
             elif type.objectName() == 'shan':
-                self.choosed = 3
-            elif type.objectName() == 'shan_tr':
-                self.choosed = 4
+                self.choosed = 2
             elif type.objectName() == 'lz78':
-                self.choosed = 5
+                self.choosed = 3
             elif type.objectName() == 'lzw':
-                self.choosed = 6
+                self.choosed = 4
             else:
                 self.choosed = -1
 
@@ -83,13 +77,7 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
         h.compress(self.file)
         self.info.setText('Compression done')
 
-    def huff_t_com(self):
-        self.info.setText('Compressing...')
-        text = read_txt_file(self.file)
-        text1 = burrows_wheeler_transformation(text)
-        h = HuffNode()
-        h.compress_from_text(text1, self.file)
-        self.info.setText('Compression done')
+
 
     def huff_dcom(self):
         self.info.setText('Decompressing...')
@@ -97,11 +85,7 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
         h.decompression(self.file, 'huff')
         self.info.setText('Dempression done')
 
-    def huff_t_dcom(self):
-        self.info.setText('Decompressing...')
-        h = Statistic_coding_decompression()
-        h.decompression_tr(self.file, 'huff')
-        self.info.setText('Dempression done')
+
 
     def shan_com(self):
         self.info.setText('Compressing...')
@@ -109,13 +93,7 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
         s.compress()
         self.info.setText('Compression done')
 
-    def shan_t_com(self):
-        self.info.setText('Compressing...')
-        text = read_txt_file(self.file)
-        text1 = burrows_wheeler_transformation(text)
-        s = Shannon(self.file)
-        s.compress_text(text1)
-        self.info.setText('Compression done')
+
 
     def shan_dcom(self):
         self.info.setText('Decompressing...')
@@ -123,11 +101,7 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
         s.decompression(self.file, 'shan')
         self.info.setText('Dempression done')
 
-    def shan_t_dcom(self):
-        self.info.setText('Decompressing...')
-        s = Statistic_coding_decompression()
-        s.decompression_tr(self.file, 'shan')
-        self.info.setText('Dempression done')
+
 
     def lz78_com(self):
         self.info.setText('Compressing...')
@@ -158,24 +132,18 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
             runnable = Runnable(self.huff_com)
             self.threadpool.start(runnable)
 
-        elif self.choosed == 2:
-            runnable = Runnable(self.huff_t_com)
-            self.threadpool.start(runnable)
 
-        elif self.choosed == 3:
+        elif self.choosed == 2:
             runnable = Runnable(self.shan_com)
             self.threadpool.start(runnable)
 
-        elif self.choosed == 4:
-            runnable = Runnable(self.shan_t_com)
-            self.threadpool.start(runnable)
 
 
-        elif self.choosed == 5:
+        elif self.choosed == 3:
             runnable = Runnable(self.lz78_com)
             self.threadpool.start(runnable)
 
-        elif self.choosed == 6:
+        elif self.choosed == 4:
             runnable = Runnable(self.lzw_com)
             self.threadpool.start(runnable)
 
@@ -185,22 +153,14 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
             self.threadpool.start(runnable)
 
         elif self.choosed == 2:
-            runnable = Runnable(self.huff_t_dcom)
-            self.threadpool.start(runnable)
-
-        elif self.choosed == 3:
             runnable = Runnable(self.shan_dcom)
             self.threadpool.start(runnable)
 
-        elif self.choosed == 4:
-            runnable = Runnable(self.shan_t_dcom)
-            self.threadpool.start(runnable)
-
-        elif self.choosed == 5:
+        elif self.choosed == 3:
             runnable = Runnable(self.lz78_dcom)
             self.threadpool.start(runnable)
 
-        elif self.choosed == 6:
+        elif self.choosed == 4:
             runnable = Runnable(self.lzw_dcom)
             self.threadpool.start(runnable)
 

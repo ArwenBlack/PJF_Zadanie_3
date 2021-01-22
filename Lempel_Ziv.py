@@ -1,6 +1,9 @@
 import sys
 from os.path import splitext
 
+import numpy as np
+from PIL.Image import Image
+
 
 class LZ_78:
     def __init__(self, dict_limit = None):
@@ -45,6 +48,7 @@ class LZ_78:
         file = open(splitext(file_name)[0] + '.lz78_com', 'wb')
         file.write(bytes(output_chars))
         file.close()
+        return splitext(file_name)[0] + '.lz78_com'
 
 
     def decompress(self, file_name):
@@ -83,10 +87,8 @@ class LZ_78:
         file = open(splitext(file_name)[0] + '.lz78_dcom', 'wb')
         file.write(bytes(output_char))
         file.close()
+        return splitext(file_name)[0] + '.lz78_dcom'
 
 
-# def main():
-#     lz = LZ_78(256)
-#     lz.compress('pt.txt')
-#
-# main()
+# lz = LZ_78(256)
+# lz.compress('pt.txt')

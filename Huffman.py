@@ -4,6 +4,7 @@ import pickle
 from os.path import splitext
 
 import Read_file
+from Burrows_Wheeler_transformation import burrows_wheeler_transformation
 
 
 def save_as_bytearray(prepared_encoded_text):
@@ -82,16 +83,20 @@ class HuffNode:
         encoded_filled = prepare_to_byte_save(encoded_text)
         byte_table = save_as_bytearray(encoded_filled)
         save_compressed_file(splitext(file_name)[0] + '.huff_com', codes_table, byte_table)
+        return splitext(file_name)[0] + '.huff_com'
 
-    def compress_from_text(self, text, file_name):
-        freq = Read_file.count_character(text)
+    def compress_with_tr(self, file_name):
+        text = Read_file.read_txt_file(file_name)
+        text1 = burrows_wheeler_transformation(text)
+        freq = Read_file.count_character(text1)
         node = create_tree(freq)
         codes = self.walk_tree(node)
         codes_table = invert_codes(codes)
-        encoded_text = encode_text(codes, text)
+        encoded_text = encode_text(codes, text1)
         encoded_filled = prepare_to_byte_save(encoded_text)
         byte_table = save_as_bytearray(encoded_filled)
         save_compressed_file(splitext(file_name)[0] + '.huff_tr_com', codes_table, byte_table)
+        return splitext(file_name)[0] + '.huff_tr_com'
 
 # def main():
 #     h = HuffNode()

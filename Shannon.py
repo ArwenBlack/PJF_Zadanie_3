@@ -4,6 +4,7 @@ from os.path import splitext
 
 import Read_file
 from All_statistic_coding_decompression import *
+from Burrows_Wheeler_transformation import burrows_wheeler_transformation
 
 
 class Shannon:
@@ -88,13 +89,17 @@ class Shannon:
         prepered_encoded_text = self.prepare_to_byte_save(encoded)
         bytearray = self.save_as_bytearray(prepered_encoded_text)
         self.save_compressed_file(splitext(self.file)[0] + '.shann_com', invert_codes_dict, bytearray)
+        return splitext(self.file)[0] + '.shann_com'
 
-    def compress_text(self, text):
-        freq_table = Read_file.count_character_freq(text)
+    def compress_tr(self):
+        text = Read_file.read_txt_file(self.file)
+        text1 = burrows_wheeler_transformation(text)
+        freq_table = Read_file.count_character_freq(text1)
         precision_dict = self.get_precision(freq_table)
         codes_dict = self.get_code(precision_dict)
-        encoded = self.get_encoded_text(codes_dict, text)
+        encoded = self.get_encoded_text(codes_dict, text1)
         invert_codes_dict = self.invert_codes(codes_dict)
         prepered_encoded_text = self.prepare_to_byte_save(encoded)
         bytearray = self.save_as_bytearray(prepered_encoded_text)
         self.save_compressed_file(splitext(self.file)[0] + '.shann_tr_com', invert_codes_dict, bytearray)
+        return splitext(self.file)[0] + '.shann_tr_com'
