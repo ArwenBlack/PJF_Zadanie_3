@@ -6,10 +6,9 @@ from PyQt5.QtCore import QRunnable, QThreadPool, pyqtSlot
 import Design
 import View_data
 from All_statistic_coding_decompression import Statistic_coding_decompression
-from Burrows_Wheeler_transformation import burrows_wheeler_transformation, burrows_wheeler_restore
 from Huffman import HuffNode
 from Lempel_Ziv_Welch import LZW
-from Read_file import read_txt_file
+from Lib_com_decom import *
 from Shannon import Shannon
 from Lempel_Ziv import LZ_78
 
@@ -37,6 +36,10 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
         self.get_file.clicked.connect(self.get_file_f)
         self.com.clicked.connect(self.compress)
         self.decom.clicked.connect(self.decompress)
+        self.zlib.clicked.connect(self.com_type)
+        self.gzib.clicked.connect(self.com_type)
+        self.bz2.clicked.connect(self.com_type)
+        self.lzma.clicked.connect(self.com_type)
         self.huff.toggled.connect(self.com_type)
         self.shan.toggled.connect(self.com_type)
         self.lz78.toggled.connect(self.com_type)
@@ -51,7 +54,6 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
 
     def get_file_f(self):
         options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
         self.file, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "",
                                                    "All Files (*);;Text files (*.txt)", options=options)
         name = os.path.basename(self.file)
@@ -60,16 +62,65 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
     def com_type(self):
         type = self.sender()
         if type.isChecked():
-            if type.objectName() == 'huff':
+            if type.objectName() == 'zlib':
                 self.choosed = 1
-            elif type.objectName() == 'shan':
+            elif type.objectName() == 'gzib':
                 self.choosed = 2
-            elif type.objectName() == 'lz78':
+            elif type.objectName() == 'bz2':
                 self.choosed = 3
-            elif type.objectName() == 'lzw':
+            elif type.objectName() == 'lzma':
                 self.choosed = 4
+            elif type.objectName() == 'huff':
+                self.choosed = 5
+            elif type.objectName() == 'shan':
+                self.choosed = 6
+            elif type.objectName() == 'lz78':
+                self.choosed = 7
+            elif type.objectName() == 'lzw':
+                self.choosed = 8
             else:
                 self.choosed = -1
+
+
+    def zlib_com(self):
+        self.info.setText('Compressing...')
+        zlib_best_com(self.file)
+        self.info.setText('Compression done')
+
+    def zlib_decom(self):
+        self.info.setText('Decompressing...')
+        zlib_best_com(self.file)
+        self.info.setText('Deompression done')
+
+    def gzib_com(self):
+        self.info.setText('Compressing...')
+        gzip_com(self.file)
+        self.info.setText('Compression done')
+
+    def gzib_decom(self):
+        self.info.setText('Deompressing...')
+        gzip_decom(self.file)
+        self.info.setText('Decompression done')
+
+    def bz2_com(self):
+        self.info.setText('Compressing...')
+        bz2_com(self.file)
+        self.info.setText('Compression done')
+
+    def bz2_decom(self):
+        self.info.setText('Decompressing...')
+        bz2_decom(self.file)
+        self.info.setText('Decompression done')
+
+    def lzma_com(self):
+        self.info.setText('Compressing...')
+        lzma_com(self.file)
+        self.info.setText('Compression done')
+
+    def lzma_decom(self):
+        self.info.setText('Decompressing...')
+        lzma_decom(self.file)
+        self.info.setText('Decompression done')
 
     def huff_com(self):
         self.info.setText('Compressing...')
@@ -129,38 +180,66 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
 
     def compress(self):
         if self.choosed == 1:
+            runnable = Runnable(self.zlib_com)
+            self.threadpool.start(runnable)
+
+        if self.choosed == 2:
+            runnable = Runnable(self.gzib_com)
+            self.threadpool.start(runnable)
+
+        if self.choosed == 3:
+            runnable = Runnable(self.bz2_com)
+            self.threadpool.start(runnable)
+
+        if self.choosed == 4:
+            runnable = Runnable(self.lzma_com)
+            self.threadpool.start(runnable)
+
+        if self.choosed == 5:
             runnable = Runnable(self.huff_com)
             self.threadpool.start(runnable)
 
 
-        elif self.choosed == 2:
+        elif self.choosed == 6:
             runnable = Runnable(self.shan_com)
             self.threadpool.start(runnable)
 
 
 
-        elif self.choosed == 3:
+        elif self.choosed == 7:
             runnable = Runnable(self.lz78_com)
             self.threadpool.start(runnable)
 
-        elif self.choosed == 4:
+        elif self.choosed == 8:
             runnable = Runnable(self.lzw_com)
             self.threadpool.start(runnable)
 
     def decompress(self):
         if self.choosed == 1:
+            runnable = Runnable(self.zlib_decom())
+            self.threadpool.start(runnable)
+        elif self.choosed == 2:
+            runnable = Runnable(self.gzib_decom())
+            self.threadpool.start(runnable)
+        elif self.choosed == 3:
+            runnable = Runnable(self.bz2_decom())
+            self.threadpool.start(runnable)
+        elif self.choosed == 4:
+            runnable = Runnable(self.lzma_decom())
+            self.threadpool.start(runnable)
+        elif self.choosed == 5:
             runnable = Runnable(self.huff_dcom)
             self.threadpool.start(runnable)
 
-        elif self.choosed == 2:
+        elif self.choosed == 6:
             runnable = Runnable(self.shan_dcom)
             self.threadpool.start(runnable)
 
-        elif self.choosed == 3:
+        elif self.choosed == 7:
             runnable = Runnable(self.lz78_dcom)
             self.threadpool.start(runnable)
 
-        elif self.choosed == 4:
+        elif self.choosed == 8:
             runnable = Runnable(self.lzw_dcom)
             self.threadpool.start(runnable)
 
