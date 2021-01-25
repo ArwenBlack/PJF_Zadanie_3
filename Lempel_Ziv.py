@@ -1,94 +1,99 @@
-import sys
 from os.path import splitext
+from bitarray import bitarray
 
-import numpy as np
-from PIL.Image import Image
 
+encodeNum = lambda num: bin(num).replace("0b","")
+getCodeBits = lambda code: 1 if code == 1 else (code-1).bit_length()
+
+def get_number(num, n_bits):
+    bNum = encodeNum(num)
+    while len(bNum) < n_bits:
+        bNum = '0' + bNum
+
+    return bNum
 
 class LZ_78:
     def __init__(self, dict_limit = None):
         self.dict_limit = dict_limit   #rozmiar słownika
 
     def compress(self, file_name):
-        #print(byte_array)
-        file = open(file_name, 'rb')
-        text = file.read()
+        file = open(file_name, "rb")
+        bits_in = bitarray()
+        bits_in.fromfile(file)  #czytanie pliku jako ciag bitow
         file.close()
-        input_chars = tuple(text)
-        #print(input_chars)
-        output_chars = (input_chars[0], )
-        dict = {tuple(): (0, ), (input_chars[0], ): (1, )}
-        i = 1
-        i_chars = 1
-        dict_size = [2]
-        while i_chars < len(input_chars):
-            if not input_chars[i:i_chars + 1] in dict:
-                #print(dict[input_chars[i:i_chars]])
-                prepend = dict[input_chars[i:i_chars]]
-                if sum(dict_size) == 1:
-                    prepend += tuple([0 for i in range(len(dict_size) - len(prepend) - 1)])
-                else:
-                    prepend += tuple([0 for i in range(len(dict_size) - len(prepend))])
-                output_chars += prepend + (input_chars[i_chars], )
-                dict[input_chars[i:i_chars +1]] = tuple(dict_size)
-                for i in range(len(dict_size)):
-                    dict_size[i] += 1
-                    if dict_size[i] != self.dict_limit:
-                        break
-                    else:
-                        dict_size[i] = 0
-                        if i == len(dict_size) - 1:
-                            dict_size.append(1)
-                i = i_chars + 1
-            i_chars += 1
-            #print(dict)
-        if input_chars[i: i_chars] in dict and i != i_chars:
-            prepend = tuple(dict[input_chars[i:i_chars]])
-            output_chars += prepend + tuple([0 for i in range(len(dict_size) - len(prepend))])
-        file = open(splitext(file_name)[0] + '.lz78_com', 'wb')
-        file.write(bytes(output_chars))
+        dict_codes = {}
+        code = 1 # numer znaku w slowniku
+        new_symbol = ""
+        bits_out = bitarray()   #ciąg wyjściowych bitow
+        i = 0
+        while i < bits_in.length():
+            f = i + 8
+            byte = ''
+            for a in str(bits_in[i:f]):   #ciąg 8 bitów na string 0 i 1
+                if a== '0' or a =='1':
+                    byte += a
+            new_symbol += byte
+            i = f
+            if new_symbol not in dict_codes:  # sprawdzenie czy kolejne znaki (ciagi znaków) są w słowniku
+                dict_codes[new_symbol] = code
+                value = int(dict_codes[new_symbol[0:-8]]) if len(new_symbol) > 8 else 0   #wartość w slowniku dla złożonego symbolu, 0 dla pojedynczego symbolu
+                number_bits = getCodeBits(code)  # 0 lub code (zalezy od tego czy symbol pojedyńczy czy złozony)
+                number = get_number(value, number_bits)   #uzupełnionie klucza slwonika (przedrostek 0 lub code)
+                bits_out.extend(number)  #ciąg bitów wyjściowych
+                bits_out.extend(byte)
+                code += 1
+                new_symbol = ""
+        if new_symbol:
+            number_bits = getCodeBits(code)
+            number = get_number(int(dict_codes[new_symbol]), number_bits)
+            bits_out.extend(number)
+        print(bits_out)
+        compressed_file = open(splitext(file_name)[0] + '.lz78_com', "wb")
+        bits_out.tofile(compressed_file)
         file.close()
+        compressed_file.close()
         return splitext(file_name)[0] + '.lz78_com'
 
-
     def decompress(self, file_name):
-        file = open(file_name, 'rb')
-        text = file.read()
+        file = open(file_name, "rb")
+        bits = bitarray()
+        bits.fromfile(file)
         file.close()
-        input_char = tuple(text)
-        output_char = (input_char[0], )
-        dict = [tuple(), (input_char[0], )]
-        i_char = 1
-        byte_number = 1
-        dict_size = self.dict_limit
-        is_char = False
+        dict_codes = {0: ""}
+        code = 1
+        symbol  = ""
+        decom_text = bitarray()
         i = 0
-        while i_char < len(input_char):
-            if is_char:
-                output_char += (input_char[i_char], )
-                dict.append(dict[i] + (input_char[i_char], ))
-                is_char = False
-                i_char += 1
-                if len(dict) == dict_size + 1:
-                    byte_number += 1
-                    dict_size *= self.dict_limit
-            else:
-                i = 0
-                multiplier = 1
-                for j in range(byte_number):
-                    i += input_char[i_char + j] * multiplier
-                    multiplier *= self.dict_limit
-                if i >= len(dict):
-                    print(i, len(dict))
-                    print(bytes(output_char))
-                output_char += dict[i]
-                i_char += byte_number
-                is_char = True
-        file = open(splitext(file_name)[0] + '.lz78_dcom', 'wb')
-        file.write(bytes(output_char))
-        file.close()
+        while i < bits.length():
+            number_bits = getCodeBits(code)
+            f = i + number_bits
+            if f > bits.length():
+                break
+            b = ''
+            for a in str(bits[i:f]):
+                if a == '0' or a == '1':
+                    b += a
+            number_code = int(b, 2)
+            if f + 8 > bits.length():
+                break
+            i = f + 8
+            dict_codes[code] = dict_codes[number_code] + (bits[f:i]).to01()
+            decom_text.extend(dict_codes[code])
+            code += 1
+        if i < bits.length():
+            number_bits = getCodeBits(code)
+            b = ''
+            for a in str(bits[i:(i + number_bits)]):
+                if a == '0' or a == '1':
+                    b+= a
+            number_code = int(b, 2)
+            decom_text.extend(dict_codes[number_code])
+        decom_file  = open(splitext(file_name)[0] + '.lz78_dcom', "wb")
+        decom_text.tofile(decom_file )
+        decom_file .close()
         return splitext(file_name)[0] + '.lz78_dcom'
 
-
+#
 # lz = LZ_78(256)
-# lz.compress('pt.txt')
+# lz.compress('arcio.txt')
+# lz.decompress('arcio.lz78_com')

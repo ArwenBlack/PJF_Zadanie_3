@@ -1,17 +1,19 @@
 import os
 import sys
+import time
+
 from PyQt5.QtWidgets import *
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QRunnable, QThreadPool, pyqtSlot
 import Design
 import View_data
 from All_statistic_coding_decompression import Statistic_coding_decompression
+from DataBase import *
 from Huffman import HuffNode
 from Lempel_Ziv_Welch import LZW
 from Lib_com_decom import *
 from Shannon import Shannon
 from Lempel_Ziv import LZ_78
-
 
 
 class Runnable(QRunnable):
@@ -29,6 +31,7 @@ class Runnable(QRunnable):
 class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
     file: str
     choosed: int
+    params: []
 
     def __init__(self):
         super().__init__()
@@ -81,104 +84,194 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
             else:
                 self.choosed = -1
 
-
     def zlib_com(self):
         self.info.setText('Compressing...')
-        zlib_best_com(self.file)
+        start = time.time()
+        f = zlib_best_com(self.file)
+        end = time.time()
+        self.params[0] = os.path.getsize(f)
+        insert_size(os.path.basename(self.file), *self.params)
+        f_time = end - start
+        self.params[0] = f_time
+        insert_time(1, os.path.basename(self.file), *self.params)
         self.info.setText('Compression done')
 
     def zlib_decom(self):
         self.info.setText('Decompressing...')
+        start = time.time()
         zlib_best_com(self.file)
+        end = time.time()
+        f_time = end - start
+        self.params[0] = f_time
+        insert_time(0, os.path.basename(self.file), *self.params)
         self.info.setText('Deompression done')
 
     def gzib_com(self):
         self.info.setText('Compressing...')
-        gzip_com(self.file)
+        start = time.time()
+        f = gzip_com(self.file)
+        end = time.time()
+        self.params[1] = os.path.getsize(f)
+        insert_size(os.path.basename(self.file), *self.params)
+        f_time = end - start
+        self.params[1] = f_time
+        insert_time(1, os.path.basename(self.file), *self.params)
         self.info.setText('Compression done')
 
     def gzib_decom(self):
         self.info.setText('Deompressing...')
+        start = time.time()
         gzip_decom(self.file)
+        end = time.time()
+        f_time = end - start
+        self.params[1] = f_time
+        insert_time(0, os.path.basename(self.file), *self.params)
         self.info.setText('Decompression done')
 
     def bz2_com(self):
         self.info.setText('Compressing...')
-        bz2_com(self.file)
+        start = time.time()
+        f = bz2_com(self.file)
+        end = time.time()
+        self.params[2] = os.path.getsize(f)
+        insert_size(os.path.basename(self.file), *self.params)
+        f_time = end - start
+        self.params[2] = f_time
+        insert_time(1, os.path.basename(self.file), *self.params)
         self.info.setText('Compression done')
 
     def bz2_decom(self):
         self.info.setText('Decompressing...')
+        start = time.time()
         bz2_decom(self.file)
+        end = time.time()
+        f_time = end - start
+        self.params[2] = f_time
+        insert_time(0, os.path.basename(self.file), *self.params)
         self.info.setText('Decompression done')
 
     def lzma_com(self):
         self.info.setText('Compressing...')
-        lzma_com(self.file)
+        start = time.time()
+        f = lzma_com(self.file)
+        end = time.time()
+        self.params[3] = os.path.getsize(f)
+        insert_size(os.path.basename(self.file), *self.params)
+        f_time = end - start
+        self.params[3] = f_time
+        insert_time(1, os.path.basename(self.file), *self.params)
         self.info.setText('Compression done')
 
     def lzma_decom(self):
         self.info.setText('Decompressing...')
+        start = time.time()
         lzma_decom(self.file)
+        end = time.time()
+        f_time = end - start
+        self.params[3] = f_time
+        insert_time(0, os.path.basename(self.file), *self.params)
         self.info.setText('Decompression done')
 
     def huff_com(self):
         self.info.setText('Compressing...')
+        start = time.time()
         h = HuffNode()
-        h.compress(self.file)
+        f = h.compress(self.file)
+        end = time.time()
+        self.params[4] = os.path.getsize(f)
+        insert_size(os.path.basename(self.file), *self.params)
+        f_time = end - start
+        self.params[4] = f_time
+        insert_time(1, os.path.basename(self.file), *self.params)
         self.info.setText('Compression done')
-
-
 
     def huff_dcom(self):
         self.info.setText('Decompressing...')
+        start = time.time()
         h = Statistic_coding_decompression()
         h.decompression(self.file, 'huff')
+        end = time.time()
+        f_time = end - start
+        self.params[4] = f_time
+        insert_time(0, os.path.basename(self.file), *self.params)
         self.info.setText('Dempression done')
-
-
 
     def shan_com(self):
         self.info.setText('Compressing...')
+        start = time.time()
         s = Shannon(self.file)
-        s.compress()
+        f = s.compress()
+        end = time.time()
+        self.params[5] = os.path.getsize(f)
+        insert_size(os.path.basename(self.file), *self.params)
+        f_time = end - start
+        self.params[5] = f_time
+        insert_time(1, os.path.basename(self.file), *self.params)
         self.info.setText('Compression done')
-
-
 
     def shan_dcom(self):
         self.info.setText('Decompressing...')
+        start = time.time()
         s = Statistic_coding_decompression()
         s.decompression(self.file, 'shan')
+        end = time.time()
+        f_time = end - start
+        self.params[5] = f_time
+        insert_time(0, os.path.basename(self.file), *self.params)
         self.info.setText('Dempression done')
-
-
 
     def lz78_com(self):
         self.info.setText('Compressing...')
+        start = time.time()
         lz78 = LZ_78(256)
-        lz78.compress(self.file)
+        f = lz78.compress(self.file)
+        end = time.time()
+        self.params[6] = os.path.getsize(f)
+        insert_size(os.path.basename(self.file), *self.params)
+        f_time = end - start
+        self.params[6] = f_time
+        insert_time(1, os.path.basename(self.file), *self.params)
         self.info.setText('Compression done')
 
     def lz78_dcom(self):
         self.info.setText('Decompressing...')
+        start = time.time()
         lz78 = LZ_78(256)
         lz78.decompress(self.file)
+        end = time.time()
+        f_time = end - start
+        self.params[6] = f_time
+        insert_time(0, os.path.basename(self.file), *self.params)
         self.info.setText('Dempression done')
 
     def lzw_com(self):
         self.info.setText('Compressing...')
+        start = time.time()
         lzw = LZW(self.file)
-        lzw.compress()
+        f = lzw.compress()
+        end = time.time()
+        self.params[7] = os.path.getsize(f)
+        insert_size(os.path.basename(self.file), *self.params)
+        f_time = end - start
+        self.params[7] = f_time
+        insert_time(1, os.path.basename(self.file), *self.params)
         self.info.setText('Compression done')
 
     def lzw_dcom(self):
         self.info.setText('Decompressing...')
+        start = time.time()
         lzw = LZW()
         lzw.decompress(self.file)
+        end = time.time()
+        f_time = end - start
+        self.params[7] = f_time
+        insert_time(0, os.path.basename(self.file), *self.params)
         self.info.setText('Dempression done')
 
     def compress(self):
+        size = os.path.getsize(self.file)
+        insert(os.path.basename(self.file), size)
+        self.params = [None for i in range(8)]
         if self.choosed == 1:
             runnable = Runnable(self.zlib_com)
             self.threadpool.start(runnable)
@@ -215,6 +308,7 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
             self.threadpool.start(runnable)
 
     def decompress(self):
+        self.params = [None for i in range(8)]
         if self.choosed == 1:
             runnable = Runnable(self.zlib_decom())
             self.threadpool.start(runnable)

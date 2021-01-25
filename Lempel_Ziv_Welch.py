@@ -47,8 +47,6 @@ class LZW:
                 entry = dictionary[symbol]
             elif symbol == dict_size:
                 entry = string + string[0]
-            else:
-                raise ValueError('Bad compressed symbol: %s' % symbol)
             decompressed_data.write(entry)
             dictionary[dict_size] = string + entry[0]
             dict_size += 1

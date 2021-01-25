@@ -21,10 +21,10 @@ def generate_random_files():
     path = os.path.join(here, folder)
     if not (Path(path).exists()):
         os.mkdir(os.path.join(here, folder))
-    files_count = random.randint(1,15)
+    files_count = random.randint(10,100)
     for i in range(files_count):
         end_path = os.path.join(path, str(i)+'.txt')
-        size = random.randint(1000, 10000)
+        size = random.randint(10000, 60000)
         letters_and_digits = string.ascii_letters + string.digits + string.punctuation
         letters = ''.join((random.choice(letters_and_digits) for i in range(size)))
         file = open(end_path , 'w', encoding='utf-8')
