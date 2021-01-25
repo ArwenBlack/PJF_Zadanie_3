@@ -12,6 +12,7 @@ from DataBase import *
 from Huffman import HuffNode
 from Lempel_Ziv_Welch import LZW
 from Lib_com_decom import *
+from My_functions import expected_compressed_size
 from Shannon import Shannon
 from Lempel_Ziv import LZ_78
 
@@ -61,6 +62,16 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
                                                    "All Files (*);;Text files (*.txt)", options=options)
         name = os.path.basename(self.file)
         self.file_name.setText(name)
+        size = os.path.getsize(self.file)
+        exp_sizes = expected_compressed_size(size)
+        self.zlib_exp_size.setText(str(exp_sizes[1]))
+        self.gzib_exp_size.setText(str(exp_sizes[2]))
+        self.bz2_exp_size.setText(str(exp_sizes[3]))
+        self.lzma_exp_size.setText(str(exp_sizes[4]))
+        self.huff_exp_size.setText(str(exp_sizes[5]))
+        self.shan_exp_size.setText(str(exp_sizes[6]))
+        self.lz78_exp_size.setText(str(exp_sizes[7]))
+
 
     def com_type(self):
         type = self.sender()

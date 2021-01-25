@@ -15,17 +15,16 @@ from Lib_com_decom import *
 from Shannon import Shannon
 
 
-def generate_random_files():
+def generate_random_files(files_count, min_size, max_size):
     here = os.path.dirname(os.path.realpath(__file__))
     folder = 'example_files'
     path = os.path.join(here, folder)
     if not (Path(path).exists()):
         os.mkdir(os.path.join(here, folder))
-    files_count = random.randint(10,100)
     for i in range(files_count):
         end_path = os.path.join(path, str(i)+'.txt')
-        size = random.randint(10000, 60000)
-        letters_and_digits = string.ascii_letters + string.digits + string.punctuation
+        size = random.randint(min_size, max_size)
+        letters_and_digits = string.ascii_letters #+ string.digits + string.punctuation
         letters = ''.join((random.choice(letters_and_digits) for i in range(size)))
         file = open(end_path , 'w', encoding='utf-8')
         file.write(letters)
@@ -34,7 +33,7 @@ def generate_random_files():
         name = str(i)+'.txt'
         insert(name, size)
         compress_time(name, end_path)
-    decompress_time(path)
+        decompress_time(path, end_path.split('.txt')[0])
 
 
 def compress_time(name, file):
@@ -95,33 +94,31 @@ def compress_time(name, file):
     insert_time(1, name, *params)  #1 - com, 0 - decom
 
 
-def decom_pom(path, roz, n, func):
+def decom_pom(path, file, n, func):
     params = [None for i in range(8)]
-    files = glob.glob(path + roz)
-    for file in files:
-        start_time = time.time()
-        if n == 4 : func(file, 'huff')
-        elif n == 5: func(file, 'shan')
-        else: func(file)
-        end_time = time.time()
-        time_t =  end_time - start_time
-        name = os.path.basename(file)
-        params[n] = time_t
-        insert_time(0, splitext(name)[0] + '.txt', *params)
+    start_time = time.time()
+    if n == 4 : func(file, 'huff')
+    elif n == 5: func(file, 'shan')
+    else: func(file)
+    end_time = time.time()
+    time_t =  end_time - start_time
+    name = os.path.basename(file)
+    params[n] = time_t
+    insert_time(0, splitext(name)[0] + '.txt', *params)
 
 
-def decompress_time(path):
-    decom_pom(path, '/*zlib_bcom', 0, zlib_best_decom)
-    decom_pom(path, '/*gz_com', 1, gzip_decom)
-    decom_pom(path, '/*bz2_com', 2, bz2_decom)
-    decom_pom(path, '/*lzma_com', 3, lzma_decom)
+def decompress_time(path, name):
+    decom_pom(path, name + '.zlib_bcom', 0, zlib_best_decom)
+    decom_pom(path, name +'.gz_com', 1, gzip_decom)
+    decom_pom(path, name +'.bz2_com', 2, bz2_decom)
+    decom_pom(path, name +'.lzma_com', 3, lzma_decom)
     a = Statistic_coding_decompression()
-    decom_pom(path, '/*huff_com', 4, a.decompression)
-    decom_pom(path, '/*shann_com', 5, a.decompression)
-    lz78 = LZ_78(256)
-    decom_pom(path, '/*lz78_com', 6, lz78.decompress)
+    decom_pom(path, name +'.huff_com', 4, a.decompression)
+    decom_pom(path, name +'.shann_com', 5, a.decompression)
+    lz78 = LZ_78()
+    decom_pom(path, name +'.lz78_com', 6, lz78.decompress)
     lzw = LZW()
-    decom_pom(path, '/*lzw_com', 7, lzw.decompress)
+    decom_pom(path, name +'.lzw_com', 7, lzw.decompress)
 
 
 
@@ -129,5 +126,5 @@ def decompress_time(path):
 
 
 
-generate_random_files()
+#generate_random_files(1,10,20)
 #ompress_time()

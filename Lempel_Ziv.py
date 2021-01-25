@@ -47,7 +47,7 @@ class LZ_78:
             number_bits = getCodeBits(code)
             number = get_number(int(dict_codes[new_symbol]), number_bits)
             bits_out.extend(number)
-        print(bits_out)
+        #print(bits_out)
         compressed_file = open(splitext(file_name)[0] + '.lz78_com', "wb")
         bits_out.tofile(compressed_file)
         file.close()
