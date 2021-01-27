@@ -151,7 +151,7 @@ def expected_compressed_size(size):
 
 def size_rate_for_not_random_data():
     size_nr = table_size.sort_values('o_file_size')
-    size_nr['file_name'] = size_nr.file_name.str.split('.txt').str[0]
+    size_nr['file_name'] = size_nr.file_name.str.split('.').str[0]
     size_nr = size_nr.drop(size_nr[size_nr['file_name'].str.isdigit()].index)
     for columnName, columnData in size_nr.iteritems():
         if columnName != 'file_name' and columnName != 'o_file_size':
@@ -164,8 +164,31 @@ def size_rate_for_not_random_data():
     fig.update_traces(marker_color='rgb(123, 188, 249)')
     return fig
 
+def compression_time_file(file_name):
+    table = com_time_table.loc[com_time_table['file_name'] == file_name]
+    size = table_size.loc[table_size['file_name'] == file_name]
+    colums = []
+    values = []
+    for columnName, columnData in table.iteritems():
+        if columnName != 'file_name':
+            colums.append(columnName)
+            values.append(float(columnData))
+    fig = go.Figure(data = [go.Pie(labels= colums, values=values)])
+    fig.update_layout(
+        title_text="Compression time of file " + file_name + ". Size: " + str(size.iloc[0]['o_file_size']) ,
+    )
+    return fig
+
+def get_not_rand_names():
+    size_nr = table_size.sort_values('o_file_size')
+    size_nr = size_nr.drop(size_nr[size_nr.file_name.str.split('.txt').str[0].str.isdigit()].index)
+    list = size_nr['file_name'].to_list()
+    return list
+
 # get_compression_rate()
 # size_for_size()
 # o_size_com_time()
 #expected_compressed_size(200000)
 #size_rate_for_not_random_data()
+#compression_time_file('pt.txt')
+get_not_rand_names()
