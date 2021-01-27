@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import traceback
 
 from PyQt5.QtWidgets import *
 from PyQt5 import QtWidgets
@@ -72,7 +73,6 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
         self.shan_exp_size.setText(str(exp_sizes[6]))
         self.lz78_exp_size.setText(str(exp_sizes[7]))
 
-
     def com_type(self):
         type = self.sender()
         if type.isChecked():
@@ -110,7 +110,7 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
     def zlib_decom(self):
         self.info.setText('Decompressing...')
         start = time.time()
-        zlib_best_com(self.file)
+        zlib_best_decom(self.file)
         end = time.time()
         f_time = end - start
         self.params[0] = f_time
@@ -138,6 +138,8 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
         self.params[1] = f_time
         insert_time(0, os.path.basename(self.file), *self.params)
         self.info.setText('Decompression done')
+
+
 
     def bz2_com(self):
         self.info.setText('Compressing...')
@@ -234,7 +236,7 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
     def lz78_com(self):
         self.info.setText('Compressing...')
         start = time.time()
-        lz78 = LZ_78(256)
+        lz78 = LZ_78()
         f = lz78.compress(self.file)
         end = time.time()
         self.params[6] = os.path.getsize(f)
@@ -247,7 +249,7 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
     def lz78_dcom(self):
         self.info.setText('Decompressing...')
         start = time.time()
-        lz78 = LZ_78(256)
+        lz78 = LZ_78()
         lz78.decompress(self.file)
         end = time.time()
         f_time = end - start
@@ -319,35 +321,52 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
             self.threadpool.start(runnable)
 
     def decompress(self):
+
         self.params = [None for i in range(8)]
-        if self.choosed == 1:
-            runnable = Runnable(self.zlib_decom())
-            self.threadpool.start(runnable)
-        elif self.choosed == 2:
-            runnable = Runnable(self.gzib_decom())
-            self.threadpool.start(runnable)
-        elif self.choosed == 3:
-            runnable = Runnable(self.bz2_decom())
-            self.threadpool.start(runnable)
-        elif self.choosed == 4:
-            runnable = Runnable(self.lzma_decom())
-            self.threadpool.start(runnable)
-        elif self.choosed == 5:
-            runnable = Runnable(self.huff_dcom)
-            self.threadpool.start(runnable)
+        try:
+            if self.choosed == 1:
+                runnable = Runnable(self.zlib_decom())
+                self.threadpool.start(runnable)
+            elif self.choosed == 2:
+                runnable = Runnable(self.gzib_decom())
+                self.threadpool.start(runnable)
+            elif self.choosed == 3:
+                runnable = Runnable(self.bz2_decom())
+                self.threadpool.start(runnable)
+            elif self.choosed == 4:
+                runnable = Runnable(self.lzma_decom())
+                self.threadpool.start(runnable)
+            elif self.choosed == 5:
+                if splitext(self.file)[1] != '.huff_com' and splitext(self.file)[1] != 'shann_com':
+                    raise Exception
+                runnable = Runnable(self.huff_dcom)
+                self.threadpool.start(runnable)
 
-        elif self.choosed == 6:
-            runnable = Runnable(self.shan_dcom)
-            self.threadpool.start(runnable)
+            elif self.choosed == 6:
+                t = splitext(self.file)[1]
+                if splitext(self.file)[1] != '.huff_com' and splitext(self.file)[1] != 'shann_com':
+                    raise Exception
+                runnable = Runnable(self.shan_dcom)
+                self.threadpool.start(runnable)
 
-        elif self.choosed == 7:
-            runnable = Runnable(self.lz78_dcom)
-            self.threadpool.start(runnable)
+            elif self.choosed == 7:
+                if splitext(self.file)[1] != '.lz78_com':
+                    raise Exception
+                runnable = Runnable(self.lz78_dcom)
+                self.threadpool.start(runnable)
 
-        elif self.choosed == 8:
-            runnable = Runnable(self.lzw_dcom)
-            self.threadpool.start(runnable)
-
+            elif self.choosed == 8:
+                if splitext(self.file)[1] != '.lzw_com':
+                    raise Exception
+                runnable = Runnable(self.lzw_dcom)
+                self.threadpool.start(runnable)
+        except Exception:
+            self.info.setText("Wrong file format")
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("Wrong file format")
+            msg.setWindowTitle("Format error")
+            msg.exec_()
 
 def main():
     app = QtWidgets.QApplication(sys.argv)

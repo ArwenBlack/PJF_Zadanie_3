@@ -15,13 +15,14 @@ from Lib_com_decom import *
 from Shannon import Shannon
 
 
-def generate_random_files(files_count, min_size, max_size):
+def generate_random_files(files_count, min_size, max_size, progress_callback):
     here = os.path.dirname(os.path.realpath(__file__))
     folder = 'example_files'
     path = os.path.join(here, folder)
     if not (Path(path).exists()):
         os.mkdir(os.path.join(here, folder))
     for i in range(files_count):
+        progress_callback.emit((i+1)*100/files_count)
         end_path = os.path.join(path, str(i)+'.txt')
         size = random.randint(min_size, max_size)
         letters_and_digits = string.ascii_letters #+ string.digits + string.punctuation

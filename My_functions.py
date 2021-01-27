@@ -123,7 +123,7 @@ def o_size_com_time():
     return fig
 
 def expected_compressed_size(size):
-    if size*100<table_size['o_file_size'].min():
+    if size*100 < table_size['o_file_size'].min():
         a = 10
         variation = 10
     else:
@@ -143,7 +143,7 @@ def expected_compressed_size(size):
     pom = exp_size['o_file_size']
     for i in range(8):
          exp_size.iloc[:,i+2] = columns.iloc[:,i]/pom
-    exp_size = pd.DataFrame({'methode':exp_size.mean().index, 'rate': exp_size.mean().values })
+    exp_size = pd.DataFrame({'methode':exp_size.mean().index, 'rate': exp_size.mean().values }).fillna(0)
     exp_size['exp_size']=  exp_size['rate'] * size
     exp_size= exp_size.astype(({'exp_size': int}))
     values = exp_size['exp_size'].to_list()
@@ -168,4 +168,4 @@ def size_rate_for_not_random_data():
 # size_for_size()
 # o_size_com_time()
 #expected_compressed_size(200000)
-size_rate_for_not_random_data()
+#size_rate_for_not_random_data()
