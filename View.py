@@ -345,7 +345,7 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
 
             elif self.choosed == 6:
                 t = splitext(self.file)[1]
-                if splitext(self.file)[1] != '.huff_com' and splitext(self.file)[1] != '.shann_com':
+                if splitext(self.file)[1] != '.huff_com' and splitext(self.file)[1] != '.shann_com' :
                     raise Exception
                 runnable = Runnable(self.shan_dcom)
                 self.threadpool.start(runnable)
