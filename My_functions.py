@@ -25,12 +25,13 @@ def get_decom_time_table():
     return dc_time_table
 
 
-table_size = get_size_table()
-com_time_table = get_com_time_table()
-decom_time_table = get_decom_time_table()
+# table_size = get_size_table()
+# com_time_table = get_com_time_table()
+# decom_time_table = get_decom_time_table()
 
 
 def get_compression_rate():
+    table_size = get_size_table()
     size = pd.DataFrame({'zlib': table_size['zlib_file_size'] / table_size['o_file_size'],
                          'gzip': table_size['gzip_file_size'] / table_size['o_file_size'],
                          'bz2': table_size['bz2_file_size'] / table_size['o_file_size'],
@@ -49,10 +50,12 @@ def get_compression_rate():
 
 
 def size_for_size():
+    table_size = get_size_table()
     size = table_size.dropna()
-    size['bins'] = pd.qcut(size['o_file_size'], q=5, precision=0).astype(str)
+    size['bins'] = pd.cut(size['o_file_size'], bins = 5, precision=0)
+    # size['bins'] = size['bins'].astype(str)
     size = size.groupby('bins').mean().reset_index()
-    # print(size)
+    size['bins'] = size['bins'].astype(str)
     fig = go.Figure(data=[go.Bar(
         name='Orginal size', x=size['bins'], y=size['o_file_size'], marker_color='rgb(135, 231, 249)'
     ),
@@ -90,6 +93,8 @@ def size_for_size():
 
 
 def o_size_com_time():
+    com_time_table = get_com_time_table()
+    table_size = get_size_table()
     size_time = pd.concat([table_size['o_file_size'], com_time_table], axis=1).dropna().sort_values('o_file_size')
     fig = go.Figure()
     button_list = []
@@ -123,6 +128,7 @@ def o_size_com_time():
     return fig
 
 def expected_compressed_size(size):
+    table_size = get_size_table()
     if size*100 < table_size['o_file_size'].min():
         a = 10
         variation = 10
@@ -150,6 +156,7 @@ def expected_compressed_size(size):
     return values
 
 def size_rate_for_not_random_data():
+    table_size = get_size_table()
     size_nr = table_size.sort_values('o_file_size')
     size_nr['file_name'] = size_nr.file_name.str.split('.').str[0]
     size_nr = size_nr.drop(size_nr[size_nr['file_name'].str.isdigit()].index)
@@ -165,6 +172,8 @@ def size_rate_for_not_random_data():
     return fig
 
 def compression_time_file(file_name):
+    table_size = get_size_table()
+    com_time_table = get_com_time_table()
     table = com_time_table.loc[com_time_table['file_name'] == file_name]
     size = table_size.loc[table_size['file_name'] == file_name]
     colums = []
@@ -180,6 +189,7 @@ def compression_time_file(file_name):
     return fig
 
 def get_not_rand_names():
+    table_size = get_size_table()
     size_nr = table_size.sort_values('o_file_size')
     size_nr = size_nr.drop(size_nr[size_nr.file_name.str.split('.txt').str[0].str.isdigit()].index)
     list = size_nr['file_name'].to_list()
@@ -191,4 +201,4 @@ def get_not_rand_names():
 #expected_compressed_size(200000)
 #size_rate_for_not_random_data()
 #compression_time_file('pt.txt')
-get_not_rand_names()
+#get_not_rand_names()

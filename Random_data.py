@@ -13,9 +13,10 @@ from Lempel_Ziv import LZ_78
 from Lempel_Ziv_Welch import LZW
 from Lib_com_decom import *
 from Shannon import Shannon
-
+from random_words import RandomWords
 
 def generate_random_files(files_count, min_size, max_size, progress_callback):
+    r = RandomWords()
     here = os.path.dirname(os.path.realpath(__file__))
     folder = 'example_files'
     path = os.path.join(here, folder)
@@ -25,8 +26,11 @@ def generate_random_files(files_count, min_size, max_size, progress_callback):
         progress_callback.emit((i+1)*100/files_count)
         end_path = os.path.join(path, str(i)+'.txt')
         size = random.randint(min_size, max_size)
-        letters_and_digits = string.ascii_letters #+ string.digits + string.punctuation
-        letters = ''.join((random.choice(letters_and_digits) for i in range(size)))
+        letters = ''
+        for j in range(size):
+            word = r.random_word()
+            letters += word
+            letters += " "
         file = open(end_path , 'w', encoding='utf-8')
         file.write(letters)
         file.close()

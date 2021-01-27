@@ -72,6 +72,7 @@ class Main_window(QtWidgets.QMainWindow, Design.Ui_MainWindow):
         self.huff_exp_size.setText(str(exp_sizes[5]))
         self.shan_exp_size.setText(str(exp_sizes[6]))
         self.lz78_exp_size.setText(str(exp_sizes[7]))
+        self.lzw_exp_size.setText(str(exp_sizes[8]))
 
     def com_type(self):
         type = self.sender()
